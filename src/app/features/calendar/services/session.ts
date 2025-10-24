@@ -7,7 +7,7 @@ import { Session, SessionCategory, SessionStatus } from '../models/session';
   providedIn: 'root'
 })
 
-export class session{
+export class sessionService{
   private sessions: Session[] = [
     {
       id: '1',
