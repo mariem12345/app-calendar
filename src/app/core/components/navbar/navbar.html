@@ -1,1 +1,35 @@
-<p>navbar works!</p>
+<nav class="navbar">
+    <div class="nav-container">
+      <!-- Left side - Logo and Navigation -->
+      <div class="nav-left">
+        <div class="logo">
+          <h2>SessionManager</h2>
+        </div>
+        <div class="nav-links">
+          <a routerLink="/calendar" routerLinkActive="active">Calendar</a>
+          <a *ngIf="isAdmin" routerLink="/admin" routerLinkActive="active">Administrator</a>
+        </div>
+      </div>
+  
+      <!-- Right side - User menu -->
+      <div class="nav-right">
+        <div class="user-menu" (click)="toggleMenu()">
+          <div class="user-info">
+            <span class="user-name">{{ currentUser?.name }}</span>
+            <span class="user-role">{{ currentUser?.role }}</span>
+          </div>
+          <div class="user-avatar">
+            {{ currentUser?.name?.charAt(0)?.toUpperCase() }}
+          </div>
+          <div class="dropdown-arrow">▼</div>
+        </div>
+  
+        <div class="dropdown-menu" [class.open]="isMenuOpen">
+          <div class="dropdown-item" (click)="logout()">
+            <i class="logout-icon">🚪</i>
+            Logout
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>

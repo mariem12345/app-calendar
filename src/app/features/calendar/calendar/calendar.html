@@ -1,1 +1,83 @@
-<p>calendar works!</p>
+<div class="calendar-container">
+    <!-- Header -->
+    <div class="calendar-header">
+      <h1>Session Calendar</h1>
+      <p>Manage and view your sessions</p>
+    </div>
+  
+    <!-- Filters -->
+    <div class="filters-section">
+      <div class="filter-group">
+        <label for="category">Category</label>
+        <select 
+          id="category" 
+          formControlName="category" 
+          class="filter-select"
+        >
+          <option value="">All Categories</option>
+          <option *ngFor="let category of categories" [value]="category">
+            {{ category }}
+          </option>
+        </select>
+      </div>
+  
+      <div class="filter-group">
+        <label for="status">Status</label>
+        <select 
+          id="status" 
+          formControlName="status" 
+          class="filter-select"
+        >
+          <option value="">All Status</option>
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
+          <option value="locked">Locked</option>
+          <option value="hidden">Hidden</option>
+        </select>
+      </div>
+    </div>
+  
+    <!-- Calendar Controls -->
+    <div class="calendar-controls">
+      <button class="nav-btn" (click)="changeMonth(-1)">‹ Previous</button>
+      <h2 class="current-month">{{ currentMonth | date:'MMMM yyyy' }}</h2>
+      <button class="nav-btn" (click)="changeMonth(1)">Next ›</button>
+    </div>
+  
+    <!-- Calendar Grid -->
+    <div class="calendar-grid">
+      <!-- Weekday Headers -->
+      <div class="calendar-weekdays">
+        <div class="weekday-header" *ngFor="let day of getWeekdayNames()">
+          {{ day }}
+        </div>
+      </div>
+  
+      <!-- Calendar Days -->
+      <div class="calendar-days">
+        <div *ngFor="let week of weeks" class="calendar-week">
+          <div 
+            *ngFor="let day of week" 
+            class="calendar-day"
+            [class.current-month]="day.getMonth() === currentMonth.getMonth()"
+            [class.today]="isToday(day)"
+          >
+            <div class="day-number">{{ day.getDate() }}</div>
+            <div class="day-sessions">
+              <div 
+                *ngFor="let session of getSessionsForDate(day)" 
+                class="session-item"
+                [class]="session.category.toLowerCase()"
+              >
+                <div class="session-time">
+                  {{ session.date | date:'HH:mm' }}
+                </div>
+                <div class="session-title">{{ session.title }}</div>
+                <div class="session-category">{{ session.category }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

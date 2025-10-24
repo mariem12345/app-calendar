@@ -7,7 +7,7 @@ import { SessionList } from './features/admin/session-list/session-list';
 import { authGuard } from './core/guards/auth-guard';
 import { adminGuard } from './core/guards/admin-guard';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', redirectTo: '/calendar', pathMatch: 'full' },
   { path: 'login', component: Login },
   { 
