@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 export interface User {
   email: string;
@@ -17,6 +18,8 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class Auth {
+  private http = inject(HttpClient);
+  private platformId = inject(PLATFORM_ID);
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
@@ -25,25 +28,16 @@ export class Auth {
   }
 
   login(email: string, password: string): Observable<LoginResponse> {
-    // Mock authentication
-    const role = email.endsWith('@sdi.es') ? 'admin' : 'user';
-    const user: User = { email, name: email.split('@')[0], role };
-    const token = btoa(JSON.stringify(user));
-
-    const response: LoginResponse = { user, token };
-
-    return of(response).pipe(
-      tap(res => {
-        localStorage.setItem('auth_token', res.token);
-        localStorage.setItem('user', JSON.stringify(res.user));
-        this.currentUserSubject.next(res.user);
-      })
-    );
+    return this.http.post<LoginResponse>('/api/auth/login', { email, password })
+      .pipe(
+        tap(res => {
+          this.setUser(res.user, res.token);
+        })
+      );
   }
 
   logout(): void {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user');
+    this.clearUser();
     this.currentUserSubject.next(null);
   }
 
@@ -56,9 +50,36 @@ export class Auth {
   }
 
   private loadUserFromStorage(): void {
+    if (!this.isBrowser()) return;
+
     const userStr = localStorage.getItem('user');
     if (userStr) {
-      this.currentUserSubject.next(JSON.parse(userStr));
+      try {
+        const user = JSON.parse(userStr);
+        this.currentUserSubject.next(user);
+      } catch (e) {
+        console.error('Error parsing user from localStorage:', e);
+        this.clearUser();
+      }
     }
+  }
+
+  private setUser(user: User, token: string): void {
+    if (this.isBrowser()) {
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+    this.currentUserSubject.next(user);
+  }
+
+  private clearUser(): void {
+    if (this.isBrowser()) {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+    }
+  }
+
+  private isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
   }
 }

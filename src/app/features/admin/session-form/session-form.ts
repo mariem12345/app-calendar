@@ -1,14 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { sessionService } from '../../../features/calendar/services/session';
 import { SessionCategory, SessionStatus } from '../../../features/calendar/models/session';
+import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-session-form',
-  imports: [],
   templateUrl: './session-form.html',
   styleUrl: './session-form.scss',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule]
 })
 export class SessionForm implements OnInit {
   sessionForm: FormGroup;
